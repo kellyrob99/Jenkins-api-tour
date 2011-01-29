@@ -1,6 +1,8 @@
 package org.kar.hudson.api
 
 import spock.lang.Specification
+import groovy.xml.StreamingMarkupBuilder
+import groovy.xml.XmlUtil
 
 /**
  * Depends on having Hudson running on the local machine.
@@ -20,10 +22,12 @@ class JSONApiTest extends Specification
         then:
         hudsonInfo.jobs.size() == 3    //unfortunate hard-coded value
         hudsonInfo.each {println it}
-        println ''.center(40, '*')
+        println 'main hudson api finished'.center(40, '*')
 
         when:
         def jobApi = new JobJSONApi()
+        def configApi = new JobConfigXmlAPI()
+
         hudsonInfo.jobs.each { job ->
             jobApi.inspectSuccessfulJob(job.url).each { jobInfo ->
                 jobInfo.each {
@@ -42,6 +46,12 @@ class JSONApiTest extends Specification
 //                println  jobApi.inspectBuildTests(build.url)
 //            }
             println ''.center(40, '*')
+
+            final config = configApi.loadJobConfig(job.url)
+            println XmlUtil.serialize(config)
+
+            println ''.center(40, '*')
+
         }
 
         then:
@@ -57,5 +67,6 @@ class JSONApiTest extends Specification
         computer.each{
             println it
         }
+        println "computer.computer.displayName is ${computer.computer.displayName}"
     }
 }
