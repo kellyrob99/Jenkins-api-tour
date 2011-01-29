@@ -1,0 +1,38 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'project-report'
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.linkedin:org.linkedin.gradle-plugins:1.5.0'
+  }
+}
+
+apply plugin: 'org.linkedin.userConfig'
+apply plugin: 'org.linkedin.spec'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+    compile spec.libraries.ivy
+    compile spec.libraries.httpBuilder
+    testCompile spec.libraries.spock
+    testCompile spec.libraries.junit
+    groovy spec.libraries.groovy
+}
+
+test{
+    jvmArgs "-Dreports.dir=$reportsDir/geb"
+}
+
+task "create-dirs" << {
+  sourceSets.all*.java.srcDirs*.each { it.mkdirs() }
+  sourceSets.all*.groovy.srcDirs*.each { it.mkdirs() }
+  sourceSets.all*.resources.srcDirs*.each { it.mkdirs() }
+}
