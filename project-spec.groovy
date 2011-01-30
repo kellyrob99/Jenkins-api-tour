@@ -3,8 +3,8 @@
  */
 
 spec = [
-        name: 'org.kar',
-        group: 'hudson-api',
+        name: 'hudson-api',
+        group: 'org.kar',
         version: '0.1',
 
         versions: [

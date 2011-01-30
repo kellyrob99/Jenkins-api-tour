@@ -5,12 +5,17 @@ package org.kar.hudson.api
  */
 class JobConfigXmlAPI
 {
-    private jsonSupport = new JSONRequestSupport()
+    private final GetRequestSupport requestSupport = new GetRequestSupport()
 
-    def loadJobConfig(rootUrl)
+    /**
+     * Load the configuration information for a Hudson job.
+     *
+     * @param rootUrl the base url of a Hudson job
+     * @return the config.xml file(as a GPathResult)
+     */
+    def loadJobConfig(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, 'config.xml')
+        requestSupport.get(rootUrl, 'config.xml')
     }
-
 }
 

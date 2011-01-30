@@ -56,6 +56,23 @@ class JSONApiTest extends Specification
 
         then:
         true
+
+        when:
+        final testJob = hudsonInfo.jobs.find {it.name.equals('test')}
+        302 == jobApi.copyJob(rootUrl, [name:'myNewJob', mode:'copy', from: testJob.name])
+        302 == jobApi.deleteJob(rootUrl+'job/myNewJob/')
+        then:
+        true
+
+        when:
+        final config = new JobConfigXmlAPI().loadJobConfig(testJob.url)
+        200 == jobApi.createJob(rootUrl, XmlUtil.serialize(config) , 'blah')
+        302 == jobApi.deleteJob(rootUrl+'job/blah/')
+
+        then:
+        true
+
+
     }
 
     def "test loading the computer info"()

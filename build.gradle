@@ -1,22 +1,23 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'project-report'
+apply plugin: 'maven'
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'org.linkedin:org.linkedin.gradle-plugins:1.5.0'
-  }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.linkedin:org.linkedin.gradle-plugins:1.5.0'
+    }
 }
 
 apply plugin: 'org.linkedin.userConfig'
 apply plugin: 'org.linkedin.spec'
 
 repositories {
-	mavenLocal()
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
@@ -27,12 +28,20 @@ dependencies {
     groovy spec.libraries.groovy
 }
 
-test{
-    jvmArgs "-Dreports.dir=$reportsDir/geb"
+group = spec.group
+version = spec.version
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
-task "create-dirs" << {
-  sourceSets.all*.java.srcDirs*.each { it.mkdirs() }
-  sourceSets.all*.groovy.srcDirs*.each { it.mkdirs() }
-  sourceSets.all*.resources.srcDirs*.each { it.mkdirs() }
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }

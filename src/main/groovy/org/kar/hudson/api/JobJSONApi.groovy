@@ -1,27 +1,74 @@
 package org.kar.hudson.api
 
+import groovyx.net.http.ContentType
+import static org.kar.hudson.api.HudsonApiPaths.*
+
 /**
  * @author Kelly Robinson
  */
 class JobJSONApi
 {
-    static final LAST_SUCCESSFUL = 'lastSuccessfulBuild/api/json'
-    static final JOB = 'api/json'
-    static final TEST_REPORT = 'testReport/api/json'
-    private jsonSupport = new JSONRequestSupport()
+    private final GetRequestSupport requestSupport = new GetRequestSupport()
+    private final PostRequestSupport postSupport = new PostRequestSupport()
 
-    def inspectSuccessfulJob(rootUrl)
+    /**
+     * Display the information for the last successful build of a Hudson job.
+     * @param rootUrl the url for a particular build
+     * @return lastSuccessfulBuild in json format
+     */
+    def inspectSuccessfulJob(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, LAST_SUCCESSFUL)
+        requestSupport.get(rootUrl, LAST_SUCCESSFUL)
     }
 
-    def inspectJob(rootUrl)
+    /**
+     * Display the job api for a particular Hudson job.
+     * @param rootUrl the url for a particular build
+     * @return job info in json format
+     */
+    def inspectJob(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, JOB, 1)
+        requestSupport.get(rootUrl, API_JSON)
     }
 
-    def inspectBuildTests(rootUrl)
+    /**
+     * Display the test results for a particular Hudson job.
+     * @param rootUrl the url for a particular build
+     * @return test info in json format
+     */
+    def inspectBuildTests(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, TEST_REPORT)
+        requestSupport.get(rootUrl, TEST_REPORT)
+    }
+
+    /**
+     * Trigger a build for a particular Hudson job.
+     * @param rootUrl the url for a particular build
+     * @return
+     */
+    def triggerBuild(String rootUrl)
+    {
+        requestSupport.get(rootUrl, BUILD)
+    }
+
+    def createJob(String rootUrl, String configXml, String jobName)
+    {
+        postSupport.post(rootUrl, CREATE_ITEM, configXml, [name:jobName], ContentType.XML)
+    }
+
+    /**
+     *
+     * @param rootUrl
+     * @param params containing name=NEWJOBNAME from=FROMJOBNAME
+     * @return
+     */
+    def copyJob(String rootUrl, Map params)
+    {
+        postSupport.post(rootUrl, CREATE_ITEM, params)
+    }
+
+    def deleteJob(String rootUrl)
+    {
+        postSupport.post(rootUrl, DELETE_JOB)
     }
 }

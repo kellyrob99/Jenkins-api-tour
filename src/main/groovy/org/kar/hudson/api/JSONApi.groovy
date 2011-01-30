@@ -1,21 +1,31 @@
 package org.kar.hudson.api
 
-import groovyx.net.http.HTTPBuilder
+import static org.kar.hudson.api.HudsonApiPaths.*
 
 /**
  * @author Kelly Robinson
  */
 class JSONApi
 {
-    private jsonSupport = new JSONRequestSupport()
+    private final GetRequestSupport requestSupport = new GetRequestSupport()
 
-    def inspectApi(rootUrl)
+    /**
+     * Display the json api for a particular Hudson url.
+     * @param rootUrl the url to query for the hosted json api
+     * @return  contents of api in json format
+     */
+    def inspectApi(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, 'api/json')
+        requestSupport.get(rootUrl, API_JSON)
     }
 
-    def inspectComputer(rootUrl)
+    /**
+     * Display the json api for a particular Hudson computer.
+     * @param rootUrl the url of the Hudson server
+     * @return  contents of computer api in json format
+     */
+    def inspectComputer(String rootUrl)
     {
-        jsonSupport.loadJSON(rootUrl, 'computer/api/json')
+        requestSupport.get(rootUrl, COMPUTER)
     }
 }
