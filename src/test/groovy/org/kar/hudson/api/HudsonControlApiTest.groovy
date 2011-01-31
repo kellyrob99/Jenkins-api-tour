@@ -13,15 +13,31 @@ class HudsonControlApiTest extends Specification
     def "test quieting and waking"()
     {
         when:
-        api.sendQuiet(rootUrl)
+        def response = api.sendQuiet(rootUrl)
 
         then:
-        true //what to do here to check?
+        response
 
         when:
-        api.sendCancelQuiet(rootUrl)
+        response = api.sendCancelQuiet(rootUrl)
 
         then:
-        true //what to do here to check?
+        response
+    }
+
+    //does nothing on mac
+    def "test restart"()
+    {
+        when:
+        def response = api.sendSafeRestart(rootUrl)
+
+        then:
+        response
+
+        when:
+        response = api.sendRestart(rootUrl)
+
+        then:
+        response
     }
 }

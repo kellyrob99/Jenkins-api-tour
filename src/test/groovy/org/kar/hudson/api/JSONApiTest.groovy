@@ -1,8 +1,7 @@
 package org.kar.hudson.api
 
-import spock.lang.Specification
-import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
+import spock.lang.Specification
 
 /**
  * Depends on having Hudson running on the local machine.
@@ -13,6 +12,8 @@ class JSONApiTest extends Specification
 {
     def rootUrl = 'http://localhost:8080/'
     def api = new JSONApi()
+    def jobApi = new JobJSONApi()
+    def configApi = new JobConfigXmlAPI()
 
     def "test loading the api"()
     {
@@ -25,10 +26,8 @@ class JSONApiTest extends Specification
         println 'main hudson api finished'.center(40, '*')
 
         when:
-        def jobApi = new JobJSONApi()
-        def configApi = new JobConfigXmlAPI()
-
         hudsonInfo.jobs.each { job ->
+            jobApi.triggerBuild(job.url)
             jobApi.inspectSuccessfulJob(job.url).each { jobInfo ->
                 jobInfo.each {
                     println it
@@ -59,20 +58,29 @@ class JSONApiTest extends Specification
 
         when:
         final testJob = hudsonInfo.jobs.find {it.name.equals('test')}
-        302 == jobApi.copyJob(rootUrl, [name:'myNewJob', mode:'copy', from: testJob.name])
-        302 == jobApi.deleteJob(rootUrl+'job/myNewJob/')
+        302 == jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
+        302 == jobApi.deleteJob(rootUrl + 'job/myNewJob/')
         then:
         true
 
         when:
         final config = new JobConfigXmlAPI().loadJobConfig(testJob.url)
-        200 == jobApi.createJob(rootUrl, XmlUtil.serialize(config) , 'blah')
-        302 == jobApi.deleteJob(rootUrl+'job/blah/')
+        200 == jobApi.createJob(rootUrl, XmlUtil.serialize(config), 'blah')
+        302 == jobApi.deleteJob(rootUrl + 'job/blah/')
 
         then:
         true
 
 
+    }
+
+    def "test a POST failure"()
+    {
+        when:
+        def status = jobApi.deleteJob("$rootUrl/job/randomJob")
+
+        then:
+        status == HttpURLConnection.HTTP_NOT_FOUND
     }
 
     def "test loading the computer info"()
@@ -81,7 +89,7 @@ class JSONApiTest extends Specification
         def computer = api.inspectComputer(rootUrl)
 
         then:
-        computer.each{
+        computer.each {
             println it
         }
         println "computer.computer.displayName is ${computer.computer.displayName}"

@@ -20,12 +20,16 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    hudson
+}
 dependencies {
     compile spec.libraries.ivy
     compile spec.libraries.httpBuilder
     testCompile spec.libraries.spock
     testCompile spec.libraries.junit
     groovy spec.libraries.groovy
+    hudson files('src/test/hudson/hudson.war')
 }
 
 group = spec.group
@@ -44,4 +48,21 @@ task javadocJar(type: Jar, dependsOn: groovydoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+def DUMMY_NAME  = 'DUMMY_NAME'
+task runHudson << {
+    ['java', '-jar', 'src/test/hudson/hudson.war', "-D$DUMMY_NAME"].execute()
+}
+
+task killHudson << {
+    final Process findProcess = ['ps', '-a'].execute()
+    findProcess.waitFor()
+    findProcess.text.eachLine {line ->
+        if(line.contains(DUMMY_NAME))
+        {
+            ['kill', '-9', line.split()[0]].execute()
+            return
+        }
+    }
 }
