@@ -51,15 +51,22 @@ class JobJSONApi
         requestSupport.get(rootUrl, BUILD)
     }
 
+    /**
+     * Create a new Job.
+     * @param rootUrl  the url of the Hudson server
+     * @param configXml the content of a config.xml file describing the new build
+     * @param jobName  name of the new job
+     * @return
+     */
     def createJob(String rootUrl, String configXml, String jobName)
     {
         postSupport.post(rootUrl, CREATE_ITEM, configXml, [name:jobName], ContentType.XML)
     }
 
     /**
-     *
-     * @param rootUrl
-     * @param params containing name=NEWJOBNAME from=FROMJOBNAME
+     * Copy a job.
+     * @param rootUrl the url of the Hudson server
+     * @param params containing name=NEWJOBNAME&mode=copy&from=FROMJOBNAME
      * @return
      */
     def copyJob(String rootUrl, Map params)
@@ -67,6 +74,11 @@ class JobJSONApi
         postSupport.post(rootUrl, CREATE_ITEM, params)
     }
 
+    /**
+     * Delete a job.
+     * @param rootUrl the url of the job
+     * @return
+     */
     def deleteJob(String rootUrl)
     {
         postSupport.post(rootUrl, DELETE_JOB)

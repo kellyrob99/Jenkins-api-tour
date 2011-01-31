@@ -18,15 +18,18 @@ class GetRequestSupport
      */
     def get(String rootUrl, String path, int depth = 0)
     {
+        def status
         HTTPBuilder http = new HTTPBuilder(rootUrl)
         http.handler.failure = { resp ->
             println "Unexpected failure on $rootUrl$path: ${resp.statusLine} ${resp.status}"
+            status = resp.status
         }
 
         def info
         http.get(path: path, query: [depth: depth]) { resp, json ->
             info = json
+            status = resp.status
         }
-        info
+        info ?: status
     }
 }
