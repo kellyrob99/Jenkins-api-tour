@@ -21,7 +21,7 @@ class JSONApiTest extends Specification
         def hudsonInfo = api.inspectApi(rootUrl)
 
         then:
-        hudsonInfo.jobs.size() == 3    //unfortunate hard-coded value
+        hudsonInfo.jobs.size() > 3    //unfortunate hard-coded value
         hudsonInfo.each {println it}
         println 'main hudson api finished'.center(40, '*')
 
