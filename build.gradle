@@ -18,18 +18,16 @@ apply plugin: 'org.linkedin.spec'
 repositories {
     mavenLocal()
     mavenCentral()
+    mavenRepo urls: "http://download.java.net/maven/2/"
 }
 
-configurations {
-    hudson
-}
 dependencies {
     compile spec.libraries.ivy
     compile spec.libraries.httpBuilder
+    compile spec.libraries.hudsonCli
     testCompile spec.libraries.spock
     testCompile spec.libraries.junit
     groovy spec.libraries.groovy
-    hudson files('src/test/hudson/hudson.war')
 }
 
 group = spec.group
@@ -50,19 +48,62 @@ artifacts {
     archives javadocJar
 }
 
-def DUMMY_NAME  = 'DUMMY_NAME'
-task runHudson << {
-    ['java', '-jar', 'src/test/hudson/hudson.war', "-D$DUMMY_NAME"].execute()
+DUMMY_NAME = 'DUMMY_NAME'
+
+task killHudson {
+    description = "find and kill the Hudson process"
+    doLast {
+        internalKillHudson()
+    }
 }
 
-task killHudson << {
+task runHudson {
+    description = 'start a Hudson server from the war at localhost:8080'
+    doLast {
+        ['java', '-jar', 'src/test/hudson/hudson.war', "-D$DUMMY_NAME"].execute()
+        Thread.sleep(10000)
+    }
+}
+
+test {
+    dependsOn runHudson
+    doLast {
+        internalKillHudson()
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '0.9.2'
+}
+
+ideaModule {
+    downloadJavadoc = true
+}
+
+ideaProject {
+    withXml { provider ->
+        def root = provider.asNode()
+        root.component.find { it.@name == 'VcsDirectoryMappings' }.mapping[0].@vcs = 'Git'
+        // Set gradle home
+        def gradleSettings = root.appendNode('component', [name: 'GradleSettings'])
+        gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+    }
+    whenConfigured { project ->
+        project.jdk.languageLevel = 'JDK_1_6'
+        project.jdk.projectJdkName = '1.6'
+    }
+}
+
+private def internalKillHudson()
+{
     final Process findProcess = ['ps', '-a'].execute()
     findProcess.waitFor()
     findProcess.text.eachLine {line ->
-        if(line.contains(DUMMY_NAME))
+        if (line.contains(DUMMY_NAME))
         {
             ['kill', '-9', line.split()[0]].execute()
             return
         }
     }
 }
+

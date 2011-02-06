@@ -14,9 +14,9 @@ class JSONApi
      * @param rootUrl the url to query for the hosted json api
      * @return  contents of api in json format
      */
-    def inspectApi(String rootUrl)
+    def inspectApi(String rootUrl, int depth = 0)
     {
-        requestSupport.get(rootUrl, API_JSON)
+        requestSupport.get(rootUrl, API_JSON, depth)
     }
 
     /**
@@ -24,8 +24,8 @@ class JSONApi
      * @param rootUrl the url of the Hudson server
      * @return  contents of computer api in json format
      */
-    def inspectComputer(String rootUrl)
+    def inspectComputer(String rootUrl, int depth = 0)
     {
-        requestSupport.get(rootUrl, COMPUTER)
+        requestSupport.get(rootUrl, COMPUTER, depth)
     }
 }

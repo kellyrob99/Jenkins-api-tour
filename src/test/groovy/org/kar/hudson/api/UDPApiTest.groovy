@@ -12,7 +12,7 @@ class UDPApiTest extends Specification
 {
     final static UDP_RESPONSE_PATTERN = '<hudson><version>.*</version><url>http://localhost:8080/</url><slave-port>.*</slave-port></hudson>'
 
-    @Unroll
+    @Unroll("querying of #rootUrl should match #xmlResponse")
     def "should be able to test for presence of Hudson by sending a UDP packet"()
     {
         def udpInfo = new UDPApi()
@@ -22,6 +22,7 @@ class UDPApiTest extends Specification
 
         then:
         response ==~ xmlResponse
+        println response
 
         where:
         rootUrl | xmlResponse

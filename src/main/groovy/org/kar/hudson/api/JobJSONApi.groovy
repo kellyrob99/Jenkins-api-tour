@@ -16,9 +16,9 @@ class JobJSONApi
      * @param rootUrl the url for a particular build
      * @return lastSuccessfulBuild in json format
      */
-    def inspectSuccessfulJob(String rootUrl)
+    def inspectSuccessfulJob(String rootUrl, int depth = 0)
     {
-        requestSupport.get(rootUrl, LAST_SUCCESSFUL)
+        requestSupport.get(rootUrl, LAST_SUCCESSFUL, depth)
     }
 
     /**
@@ -26,9 +26,9 @@ class JobJSONApi
      * @param rootUrl the url for a particular build
      * @return job info in json format
      */
-    def inspectJob(String rootUrl)
+    def inspectJob(String rootUrl, int depth = 0)
     {
-        requestSupport.get(rootUrl, API_JSON)
+        requestSupport.get(rootUrl, API_JSON, depth)
     }
 
     /**
@@ -36,9 +36,9 @@ class JobJSONApi
      * @param rootUrl the url for a particular build
      * @return test info in json format
      */
-    def inspectBuildTests(String rootUrl)
+    def inspectBuildTests(String rootUrl, int depth = 0)
     {
-        requestSupport.get(rootUrl, TEST_REPORT)
+        requestSupport.get(rootUrl, TEST_REPORT, depth)
     }
 
     /**

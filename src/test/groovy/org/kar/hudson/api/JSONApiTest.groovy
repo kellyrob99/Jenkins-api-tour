@@ -2,7 +2,7 @@ package org.kar.hudson.api
 
 import groovy.xml.XmlUtil
 import spock.lang.Specification
-
+import static java.net.HttpURLConnection.*
 /**
  * Depends on having Hudson running on the local machine.
  *
@@ -58,15 +58,15 @@ class JSONApiTest extends Specification
 
         when:
         final testJob = hudsonInfo.jobs.find {it.name.equals('test')}
-        302 == jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
-        302 == jobApi.deleteJob(rootUrl + 'job/myNewJob/')
+        HTTP_MOVED_TEMP == jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
+        HTTP_MOVED_TEMP == jobApi.deleteJob(rootUrl + 'job/myNewJob/')
         then:
         true
 
         when:
         final config = new JobConfigXmlAPI().loadJobConfig(testJob.url)
-        200 == jobApi.createJob(rootUrl, XmlUtil.serialize(config), 'blah')
-        302 == jobApi.deleteJob(rootUrl + 'job/blah/')
+        HTTP_OK == jobApi.createJob(rootUrl, XmlUtil.serialize(config), 'blah')
+        HTTP_MOVED_TEMP == jobApi.deleteJob(rootUrl + 'job/blah/')
 
         then:
         true
@@ -80,7 +80,7 @@ class JSONApiTest extends Specification
         def status = jobApi.deleteJob("$rootUrl/job/randomJob")
 
         then:
-        status == HttpURLConnection.HTTP_NOT_FOUND
+        status == HTTP_NOT_FOUND
     }
 
     def "test loading the computer info"()
