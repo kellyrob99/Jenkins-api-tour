@@ -57,11 +57,19 @@ class HudsonCliApiTest extends Specification
     {
         final ByteArrayOutputStream output = new ByteArrayOutputStream()
         when:
-        output = new ByteArrayOutputStream()
         api.runCliCommand(rootUrl, ['groovysh', 'for(item in hudson.model.Hudson.instance.items) { println("job $item.name")}'],
                 System.in, output, System.err)
 
         then:
         output.toString().split('\n')[0].startsWith('job')
     }
+//
+//    def "should be able to install the git plugin"()
+//    {
+//        final ByteArrayOutputStream output = new ByteArrayOutputStream()
+//        when:
+//        api.runCliCommand(rootUrl, ['install-plugin', 'git'])
+//        then:
+//        println output.toString()
+//    }
 }

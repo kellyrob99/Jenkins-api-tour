@@ -57,7 +57,7 @@ class JSONApiTest extends Specification
         true
 
         when:
-        final testJob = hudsonInfo.jobs.find {it.name.equals('test')}
+        final testJob = hudsonInfo.jobs.find {it.name.contains('hudson')}
         HTTP_MOVED_TEMP == jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
         HTTP_MOVED_TEMP == jobApi.deleteJob(rootUrl + 'job/myNewJob/')
         then:
