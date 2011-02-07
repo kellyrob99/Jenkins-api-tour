@@ -66,10 +66,14 @@ task runHudson {
 }
 
 test {
-    dependsOn runHudson
-    doLast {
-        internalKillHudson()
+    if (!project.hasProperty('ciBuild'))
+    {
+        dependsOn runHudson
+        doLast {
+            internalKillHudson()
+        }
     }
+
 }
 
 task wrapper(type: Wrapper) {
