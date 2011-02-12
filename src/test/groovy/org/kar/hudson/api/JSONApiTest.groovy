@@ -8,6 +8,7 @@ import static java.net.HttpURLConnection.*
  *
  * @author Kelly Robinson
  */
+@SuppressWarnings('MethodName')
 class JSONApiTest extends Specification
 {
     def rootUrl = 'http://localhost:8080/'

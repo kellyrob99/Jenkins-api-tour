@@ -5,6 +5,7 @@ import spock.lang.Specification
 /**
  * @author Kelly Robinson
  */
+@SuppressWarnings('MethodName')
 class HudsonCliApiTest extends Specification
 {
     def rootUrl = 'http://localhost:8080/'

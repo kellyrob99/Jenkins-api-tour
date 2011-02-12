@@ -8,6 +8,7 @@ import spock.lang.Unroll
  *
  * @author Kelly Robinson
  */
+@SuppressWarnings('MethodName')
 class UDPApiTest extends Specification
 {
     final static UDP_RESPONSE_PATTERN = '<hudson><version>.*</version><url>http://localhost:8080/</url><slave-port>.*</slave-port></hudson>'
