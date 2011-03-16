@@ -3,6 +3,7 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 apply plugin: 'maven'
 apply plugin: 'code-quality'
+apply plugin: 'jetty'
 
 buildscript {
     repositories {
@@ -19,16 +20,22 @@ apply plugin: 'org.linkedin.spec'
 repositories {
     mavenLocal()
     mavenCentral()
-    mavenRepo urls: "http://download.java.net/maven/2/"
+    mavenRepo urls: ["http://download.java.net/maven/2/", 'http://maven.glassfish.org/content/groups/public/']
+}
+
+configurations {
+    jenkins
 }
 
 dependencies {
     compile spec.libraries.ivy
     compile spec.libraries.httpBuilder
-    compile spec.libraries.hudsonCli
+    compile spec.libraries.jenkinsCli
+    runtime 'commons-cli:commons-cli:1.2'
     testCompile spec.libraries.spock
     testCompile spec.libraries.junit
     groovy spec.libraries.groovy
+    jenkins spec.libraries.jenkins
 }
 
 group = spec.group
@@ -49,32 +56,39 @@ artifacts {
     archives javadocJar
 }
 
-DUMMY_NAME = 'DUMMY_NAME'
-
-task killHudson {
-    description = "find and kill the Hudson process"
-    doLast {
-        internalKillHudson()
-    }
-}
-
-task runHudson {
-    description = 'start a Hudson server from the war at localhost:8080'
-    doLast {
-        ['java', '-jar', 'src/test/hudson/hudson.war', "-D$DUMMY_NAME"].execute()
-        Thread.sleep(10000)
-    }
-}
 
 test {
-    if (!project.hasProperty('ciBuild'))
-    {
-        dependsOn runHudson
-        doLast {
-            internalKillHudson()
+    dependsOn jettyRunWar
+    //takes a while to startup and otherwise tests run while still initializing
+    doFirst {
+        boolean keepGoing = true
+        int tries = 0
+        final int maxTries = 30
+        while (keepGoing && tries < maxTries)
+        {
+            try
+            {
+                keepGoing = 'http://localhost:8080/'.toURL().text.contains('Please wait')
+            }
+            catch (e)
+            {
+                //logger.warn("Exception thrown: $e")
+            }
+            logger.warn("Waiting for Jenkins ${++tries}")
+            Thread.sleep(5000)
         }
     }
+}
 
+jar.enabled = true
+[jettyRun, jettyRunWar]*.daemon = true
+
+/**
+ * Use the jetty plugin to run the build server.
+ */
+jettyRunWar {
+    webApp = configurations.jenkins.resolve().find {it.name.endsWith('war')}
+    contextPath = ''
 }
 
 task wrapper(type: Wrapper) {
@@ -96,19 +110,6 @@ ideaProject {
     whenConfigured { project ->
         project.jdk.languageLevel = 'JDK_1_6'
         project.jdk.projectJdkName = '1.6'
-    }
-}
-
-private def internalKillHudson()
-{
-    final Process findProcess = ['ps', '-a'].execute()
-    findProcess.waitFor()
-    findProcess.text.eachLine {line ->
-        if (line.contains(DUMMY_NAME))
-        {
-            ['kill', '-9', line.split()[0]].execute()
-            return
-        }
     }
 }
 

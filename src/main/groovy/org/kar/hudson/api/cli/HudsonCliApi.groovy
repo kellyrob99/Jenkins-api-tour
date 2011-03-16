@@ -10,18 +10,22 @@ import static groovyx.net.http.Method.GET
  */
 class HudsonCliApi
 {
-//    http://localhost:8080/jnlpJars/hudson-cli.jar
-    static final String JAR_DIR = '/.hudsonApi/'
-    static final String JAR_NAME = 'hudson-cli.jar'
+    static final String JAR_DIR = '/.jenkinsApi/'
+    static final String JAR_NAME = 'jenkins-cli.jar'
+    static final String URI_PATH = "/jnlpJars/$JAR_NAME"
     static final String FINAL_PATH = JAR_DIR + JAR_NAME
 
+    /**
+     * Download the cli jar from the specified server.
+     * @param rootUrl  of the server to download from
+     */
     def downloadJar(String rootUrl)
     {
         def userHome = System.getProperty('user.home')
         println "downloading $rootUrl to $userHome/$FINAL_PATH"
         HTTPBuilder http = new HTTPBuilder(rootUrl)
         http.request(GET, BINARY) { req ->
-            uri.path = '/jnlpJars/hudson-cli.jar'
+            uri.path = URI_PATH
 
             response.success = { resp, reader ->
                 println "Got response: ${resp.statusLine}"
@@ -39,16 +43,36 @@ class HudsonCliApi
         }
     }
 
+    /**
+     * Drive the CLI with a single argument to execute.
+     * Optionally accepts streams for input, output and err, all of which
+     * are set by default to System unless otherwise specified.
+     * @param rootUrl
+     * @param arg
+     * @param input
+     * @param output
+     * @param err
+     * @return
+     */
     def runCliCommand(String rootUrl, String arg, InputStream input = System.in, OutputStream output = System.out, OutputStream err = System.err)
     {
         runCliCommand(rootUrl, [arg], input, output, err)
     }
 
+    /**
+     * Drive the CLI with multiple arguments to execute.
+     * Optionally accepts streams for input, output and err, all of which
+     * are set by default to System unless otherwise specified.
+     * @param rootUrl
+     * @param args
+     * @param input
+     * @param output
+     * @param err
+     * @return
+     */
     def runCliCommand(String rootUrl, List<String> args, InputStream input = System.in, OutputStream output = System.out, OutputStream err = System.err)
     {
         def CLI cli = new CLI(rootUrl.toURI().toURL())
         cli.execute(args, input, output, err)
     }
-
-
 }

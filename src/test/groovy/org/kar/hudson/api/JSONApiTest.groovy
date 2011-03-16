@@ -22,13 +22,14 @@ class JSONApiTest extends Specification
         def hudsonInfo = api.inspectApi(rootUrl)
 
         then:
-        hudsonInfo.jobs.size() > 3    //unfortunate hard-coded value
+        hudsonInfo.jobs.size() > 1
+        println hudsonInfo.toString(2)
         hudsonInfo.each {println it}
         println 'main hudson api finished'.center(40, '*')
 
         when:
         hudsonInfo.jobs.each { job ->
-            jobApi.triggerBuild(job.url)
+//            jobApi.triggerBuild(job.url)
             jobApi.inspectSuccessfulJob(job.url).each { jobInfo ->
                 jobInfo.each {
                     println it
@@ -58,7 +59,7 @@ class JSONApiTest extends Specification
         true
 
         when:
-        final testJob = hudsonInfo.jobs.find {it.name.contains('hudson')}
+        final testJob = hudsonInfo.jobs.find {it.name.contains('test')}
         HTTP_MOVED_TEMP == jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
         HTTP_MOVED_TEMP == jobApi.deleteJob(rootUrl + 'job/myNewJob/')
         then:
