@@ -74,5 +74,6 @@ class HudsonCliApi
     {
         def CLI cli = new CLI(rootUrl.toURI().toURL())
         cli.execute(args, input, output, err)
+        cli.close()
     }
 }

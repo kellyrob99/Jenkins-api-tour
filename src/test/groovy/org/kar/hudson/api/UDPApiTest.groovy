@@ -11,7 +11,7 @@ import spock.lang.Unroll
 @SuppressWarnings('MethodName')
 class UDPApiTest extends Specification
 {
-    final static UDP_RESPONSE_PATTERN = '<hudson><version>.*</version><url>http://localhost:8080/</url><slave-port>.*</slave-port></hudson>'
+    final static UDP_RESPONSE_PATTERN = '<hudson><version>.*</version><slave-port>.*</slave-port></hudson>'
 
     @Unroll("querying of #rootUrl should match #xmlResponse")
     def "should be able to test for presence of Hudson by sending a UDP packet"()

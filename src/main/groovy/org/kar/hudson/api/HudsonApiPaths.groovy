@@ -3,7 +3,7 @@ package org.kar.hudson.api
 /**
  * @author Kelly Robinson
  */
-public class HudsonApiPaths
+public interface HudsonApiPaths
 {
     static final String QUIET = 'quietDown'
     static final String CANCEL_QUIET = 'cancelQuietDown'

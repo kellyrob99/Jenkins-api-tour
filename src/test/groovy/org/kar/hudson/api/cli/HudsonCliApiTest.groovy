@@ -38,6 +38,7 @@ class HudsonCliApiTest extends Specification
                 commands[lines[i]] = lines[i + 1]
             }
         }
+        println commands
         commands.size() > 0
     }
 
@@ -50,6 +51,7 @@ class HudsonCliApiTest extends Specification
         api.runCliCommand(rootUrl, ['groovysh', "println '$message'".toString()], System.in, output, System.err)
 
         then:
+        println output.toString()
         output.toString().split('\n')[0] == message
     }
 
@@ -62,15 +64,17 @@ class HudsonCliApiTest extends Specification
                 System.in, output, System.err)
 
         then:
+        println output.toString()
         output.toString().split('\n')[0].startsWith('job')
     }
-//
-//    def "should be able to install the git plugin"()
-//    {
-//        final ByteArrayOutputStream output = new ByteArrayOutputStream()
-//        when:
-//        api.runCliCommand(rootUrl, ['install-plugin', 'git'])
-//        then:
-//        println output.toString()
-//    }
+
+    def "should be able to install the git plugin"()
+    {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream()
+        when:
+        api.runCliCommand(rootUrl, ['install-plugin', 'git'], System.in, output, System.err)
+        then:
+        println output.toString()
+        true
+    }
 }

@@ -25,6 +25,6 @@ spec.libraries = [
         ivy: "org.apache.ivy:ivy:2.0.0",
         httpBuilder: 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.1',
         junit: 'junit:junit:4.8.2',
-        jenkinsCli: "org.jenkins-ci.main:cli:${spec.versions.jenkins}",
+        jenkinsCli: 'org.jvnet.hudson.main:cli:1.395',
         jenkins: "org.jenkins-ci.main:jenkins-war:${spec.versions.jenkins}@war"
 ]
