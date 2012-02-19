@@ -5,7 +5,7 @@
 spec = [
         name: 'hudson-api',
         group: 'org.kar',
-        version: '0.1',
+        version: '0.2',
 
         versions: [
                 groovy: '1.8.6',

@@ -11,6 +11,12 @@ class HudsonCliApiTest extends Specification
     def rootUrl = 'http://localhost:8080/'
 
     final HudsonCliApi api = new HudsonCliApi()
+    //final JSONApi jsonApi = new JSONApi()
+
+    static final String UPDATE_ERROR = '''git is neither a valid file, URL, nor a plugin artifact name in the update center
+No update center data is retrieved yet from: http://updates.jenkins-ci.org/update-center.json
+git looks like a short plugin name. Did you mean 'null'?
+'''
 
     def "should be able to download the hudson cli jar"()
     {
@@ -38,7 +44,7 @@ class HudsonCliApiTest extends Specification
                 commands[lines[i]] = lines[i + 1]
             }
         }
-        println commands
+//        println commands.inspect()
         commands.size() > 0
     }
 
@@ -51,8 +57,29 @@ class HudsonCliApiTest extends Specification
         api.runCliCommand(rootUrl, ['groovysh', "println '$message'".toString()], System.in, output, System.err)
 
         then:
-        println output.toString()
         output.toString().split('\n')[0] == message
+    }
+
+    /**
+     * Expected output of 'who-am-i' command looks like:
+     * ''Authenticated as: anonymous
+     * Authorities:
+     *   anonymous'''
+     */
+    def "should be able to figure out who-am-i"()
+    {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream()
+        when:
+        api.runCliCommand(rootUrl,'who-am-i', System.in, output, System.err)
+
+        
+        then:
+        def whoAmI = output.toString().split('\n')
+        def authentication = whoAmI[0].split(':').collect {it.trim()}
+        def authorization = whoAmI[1..-1].collect{it.trim()}
+
+        authentication[1] == 'anonymous'
+        authorization[1] == 'anonymous'
     }
 
 
@@ -75,19 +102,22 @@ hudson.model.Hudson.instance.administrativeMonitors.inject([:]){ result, it ->
         //some keys in the map contain $ signs, so we opt to just replace them with themselves
         def map = new GroovyShell(new Binding('CoreUpdateMonitor':'$CoreUpdateMonitor',
                 'AdministrativeMonitorImpl':'$AdministrativeMonitorImpl')).evaluate(s)
-        println map
-        println map.getClass()
-
-//        output.toString().split('\n')[0].startsWith('job')
+        map.hudsonHomeIsFull != null
+        map.hudsonHomeIsFull.enabled == true
     }
 
+    /**
+     * This test is suffering from https://issues.jenkins-ci.org/browse/JENKINS-10061
+     * This works for installing plugins, but ONLY after manually triggering an update check for plugins from within
+     * the GUI. keeping the test intact to track when/if this bug is fixed.
+     */
     def "should be able to install the git plugin"()
     {
         final ByteArrayOutputStream output = new ByteArrayOutputStream()
         when:
+        //jsonApi.checkForUpdates(rootUrl)
         api.runCliCommand(rootUrl, ['install-plugin', 'git'], System.in, output, System.err)
         then:
-        println output.toString()
-        true
+        output.toString() == UPDATE_ERROR
     }
 }

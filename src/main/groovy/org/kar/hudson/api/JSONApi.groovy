@@ -28,4 +28,18 @@ class JSONApi
     {
         requestSupport.get(rootUrl, COMPUTER, depth)
     }
+
+    /**
+     * Trigger an update check for plugin content.
+     * NOTE: Presently does not work due to existing bugs with Jenkins
+     * https://issues.jenkins-ci.org/browse/JENKINS-10061
+     * https://issues.jenkins-ci.org/browse/JENKINS-10062
+     * @param rootUrl
+     * @param depth
+     * @return
+     */
+    def checkForUpdates(String rootUrl, int depth = 0)
+    {
+        requestSupport.get(rootUrl, CHECK_UPDATES, depth)
+    }
 }
