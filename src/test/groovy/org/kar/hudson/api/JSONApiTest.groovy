@@ -12,67 +12,46 @@ import static java.net.HttpURLConnection.*
 @SuppressWarnings('MethodName')
 class JSONApiTest extends Specification
 {
+    public static final String TEST_JOB_NAME = 'test'
+    public static final String NEW_JOB_NAME = 'myNewJob'
     def rootUrl = 'http://localhost:8080/'
     def api = new JSONApi()
     def jobApi = new JobJSONApi()
     def configApi = new JobConfigXmlAPI()
 
-    def "test loading the api"()
+    def "test creating, copying and deleting jobs"()
     {
+        //create a new job based from a config.xml file
         when:
+        final createJobResult = jobApi.createJob(rootUrl, XmlUtil.serialize(new File(this.getClass().classLoader
+                .getResource('config.xml').toURI()).text), TEST_JOB_NAME)
         def hudsonInfo = api.inspectApi(rootUrl)
-        hudsonInfo.jobs.each { job ->
-            jobApi.triggerBuild(job.url)
-            jobApi.inspectSuccessfulJob(job.url).each { jobInfo ->
-                jobInfo.each {
-                    println it
-                }
-            }
-            println ''.center(40, '*')
-            final jobDetails = jobApi.inspectJob(job.url)
-            jobDetails.each { jobInfo ->
-                jobInfo.each {
-                    println it
-                }
-            }
-            jobDetails.builds.each { build ->
-                println jobApi.inspectBuildTests(build.url)
-            }
-            println ''.center(40, '*')
-
-            final config = configApi.loadJobConfig(job.url)
-            println XmlUtil.serialize(config)
-
-            println ''.center(40, '*')
-
-        }
-
-        then:
-        hudsonInfo.jobs.size() > 0
-        println hudsonInfo.toString()
-        hudsonInfo.each {println it}
-        println 'main hudson api finished'.center(40, '*')
-
-        final testJob = hudsonInfo.jobs.find {it.name.contains('test')}
-
-        //copy an existing job
-        when:
-        def copyJobResult = jobApi.copyJob(rootUrl, [name: 'myNewJob', mode: 'copy', from: testJob.name])
-        def deleteJobResult = jobApi.deleteJob(rootUrl + 'job/myNewJob/')
-
-        then:
-        HTTP_MOVED_TEMP == copyJobResult
-        HTTP_MOVED_TEMP == deleteJobResult
-
-        //create a new job based on a downloaded config.xml file
-        when:
-        final config = new JobConfigXmlAPI().loadJobConfig(testJob.url)
-        final createJobResult = jobApi.createJob(rootUrl, XmlUtil.serialize(config), 'blah')
-        final deleteCreatedJobResult = jobApi.deleteJob(rootUrl + 'job/blah/')
+        final testJob = hudsonInfo.jobs.find {it.name == TEST_JOB_NAME}
 
         then:
         HTTP_OK == createJobResult
-        HTTP_MOVED_TEMP == deleteCreatedJobResult
+        hudsonInfo.jobs.size() > 0
+        testJob.name == TEST_JOB_NAME
+
+        //copy an existing job
+        when:
+        def copyJobResult = jobApi.copyJob(rootUrl, [name: NEW_JOB_NAME, mode: 'copy', from: testJob.name])
+        hudsonInfo = api.inspectApi(rootUrl)
+        final newTestJob = hudsonInfo.jobs.find {it.name == NEW_JOB_NAME}
+
+        then:
+        HTTP_MOVED_TEMP == copyJobResult
+        newTestJob != null
+        newTestJob.name == NEW_JOB_NAME
+
+        //delete copied job
+        when:
+        def deleteJobResult = jobApi.deleteJob(newTestJob.url)
+        hudsonInfo = api.inspectApi(rootUrl)
+        def deletedJob = hudsonInfo.jobs.find {it.name == NEW_JOB_NAME}
+        then:
+        HTTP_MOVED_TEMP == deleteJobResult
+        deletedJob == null
     }
 
     def "test a POST failure"()
@@ -90,9 +69,6 @@ class JSONApiTest extends Specification
         def computer = api.inspectComputer(rootUrl)
 
         then:
-        computer.each {
-            println it
-        }
-        println "computer.computer.displayName is ${computer.computer.displayName}"
+        computer.computer.displayName == 'master'
     }
 }

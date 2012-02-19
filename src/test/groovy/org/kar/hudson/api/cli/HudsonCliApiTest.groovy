@@ -60,12 +60,25 @@ class HudsonCliApiTest extends Specification
     {
         final ByteArrayOutputStream output = new ByteArrayOutputStream()
         when:
-        api.runCliCommand(rootUrl, ['groovysh', 'for(item in hudson.model.Hudson.instance.items) { println("job $item.name")}'],
+        api.runCliCommand(rootUrl, ['groovysh', '''
+hudson.model.Hudson.instance.administrativeMonitors.inject([:]){ result, it ->
+    result[it.id] = [enabled: it.enabled, activated: it.activated]
+    result
+}.inspect()
+'''],
                 System.in, output, System.err)
 
+
         then:
-        println output.toString()
-        output.toString().split('\n')[0].startsWith('job')
+        def s = output.toString()[11..-1]   // the output string is wrapped in some boilerplate, remove it
+        println s
+        //some keys in the map contain $ signs, so we opt to just replace them with themselves
+        def map = new GroovyShell(new Binding('CoreUpdateMonitor':'$CoreUpdateMonitor',
+                'AdministrativeMonitorImpl':'$AdministrativeMonitorImpl')).evaluate(s)
+        println map
+        println map.getClass()
+
+//        output.toString().split('\n')[0].startsWith('job')
     }
 
     def "should be able to install the git plugin"()

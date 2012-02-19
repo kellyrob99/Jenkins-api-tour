@@ -18,9 +18,10 @@ apply plugin: 'org.linkedin.userConfig'
 apply plugin: 'org.linkedin.spec'
 
 repositories {
+    mavenRepo urls: ["http://download.java.net/maven/2/", 'http://maven.glassfish.org/content/groups/public/',
+            'http://m2repo.spockframework.org/']
     mavenLocal()
     mavenCentral()
-    mavenRepo urls: ["http://download.java.net/maven/2/", 'http://maven.glassfish.org/content/groups/public/']
 }
 
 configurations {
@@ -28,6 +29,7 @@ configurations {
 }
 
 dependencies {
+    compile gradleApi()
     compile spec.libraries.ivy
     compile spec.libraries.httpBuilder
     compile spec.libraries.jenkinsCli
@@ -64,6 +66,7 @@ test {
         boolean keepGoing = true
         int tries = 0
         final int maxTries = 30
+        final long sleep = 5000
         while (keepGoing && tries < maxTries)
         {
             try
@@ -74,8 +77,8 @@ test {
             {
                 //logger.warn("Exception thrown: $e")
             }
-            logger.warn("Waiting for Jenkins ${++tries}")
-            Thread.sleep(5000)
+            logger.warn("Waiting for Jenkins ${++tries} ($sleep ms)")
+            Thread.sleep(sleep)
         }
     }
 }
@@ -84,32 +87,39 @@ jar.enabled = true
 [jettyRun, jettyRunWar]*.daemon = true
 
 /**
- * Use the jetty plugin to run the build server.
- */
+* Use the jetty plugin to run the build server.
+*/
 jettyRunWar {
+    dependsOn configurations.jenkins
     webApp = configurations.jenkins.resolve().find {it.name.endsWith('war')}
     contextPath = ''
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '0.9.2'
+    gradleVersion = '1.0-milestone-8'
 }
 
 ideaModule {
     downloadJavadoc = true
 }
 
-ideaProject {
-    withXml { provider ->
-        def root = provider.asNode()
-        root.component.find { it.@name == 'VcsDirectoryMappings' }.mapping[0].@vcs = 'Git'
-        // Set gradle home
-        def gradleSettings = root.appendNode('component', [name: 'GradleSettings'])
-        gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+idea{
+    project {
+        jdkName = '1.6'
+        languageLevel = '1.6'
+        ipr {
+            withXml { provider ->
+                def root = provider.asNode()
+                root.component.find { it.@name == 'VcsDirectoryMappings' }.mapping[0].@vcs = 'Git'
+                // Set gradle home
+                def gradleSettings = root.appendNode('component', [name: 'GradleSettings'])
+                gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+            }
+        }
     }
-    whenConfigured { project ->
-        project.jdk.languageLevel = 'JDK_1_6'
-        project.jdk.projectJdkName = '1.6'
+    module {
+        downloadJavadoc = true
+        downloadSources = true
     }
 }
 

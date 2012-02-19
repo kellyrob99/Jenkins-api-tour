@@ -70,7 +70,8 @@ class HudsonCliApi
      * @param err
      * @return
      */
-    def runCliCommand(String rootUrl, List<String> args, InputStream input = System.in, OutputStream output = System.out, OutputStream err = System.err)
+    def runCliCommand(String rootUrl, List<String> args, InputStream input = System.in,
+            OutputStream output = System.out, OutputStream err = System.err)
     {
         def CLI cli = new CLI(rootUrl.toURI().toURL())
         cli.execute(args, input, output, err)
