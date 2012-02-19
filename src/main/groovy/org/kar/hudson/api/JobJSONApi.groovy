@@ -1,7 +1,7 @@
 package org.kar.hudson.api
 
-import groovyx.net.http.ContentType
 import static org.kar.hudson.api.HudsonApiPaths.*
+import groovyx.net.http.ContentType
 
 /**
  * @author Kelly Robinson
@@ -58,6 +58,7 @@ class JobJSONApi
      * @param jobName  name of the new job
      * @return
      */
+    @SuppressWarnings('FactoryMethodName')
     def createJob(String rootUrl, String configXml, String jobName)
     {
         postSupport.post(rootUrl, CREATE_ITEM, configXml, [name:jobName], ContentType.XML)

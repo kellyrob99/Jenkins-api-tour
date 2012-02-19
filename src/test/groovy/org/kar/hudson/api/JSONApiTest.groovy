@@ -1,8 +1,8 @@
 package org.kar.hudson.api
 
+import static java.net.HttpURLConnection.*
 import groovy.xml.XmlUtil
 import spock.lang.Specification
-import static java.net.HttpURLConnection.*
 
 /**
  * Depends on having Hudson running on the local machine.
@@ -69,6 +69,6 @@ class JSONApiTest extends Specification
         def computer = api.inspectComputer(rootUrl)
 
         then:
-        computer.computer.displayName == 'master'
+        computer.computer.displayName[0] == 'master'
     }
 }

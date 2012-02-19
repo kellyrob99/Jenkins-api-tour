@@ -1,9 +1,9 @@
 package org.kar.hudson.api.cli
 
-import groovyx.net.http.HTTPBuilder
-import hudson.cli.CLI
 import static groovyx.net.http.ContentType.BINARY
 import static groovyx.net.http.Method.GET
+import groovyx.net.http.HTTPBuilder
+import hudson.cli.CLI
 
 /**
  * @author Kelly Robinson
