@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.kar</groupId>
+  <artifactId>hudson-api</artifactId>
+  <version>0.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20120219215219</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.2-SNAPSHOT</value>
+        <updated>20120219215219</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
