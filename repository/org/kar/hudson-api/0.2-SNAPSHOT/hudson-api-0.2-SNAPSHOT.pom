@@ -5,18 +5,17 @@
   <groupId>org.kar</groupId>
   <artifactId>hudson-api</artifactId>
   <version>0.2-SNAPSHOT</version>
-  <packaging>jar</packaging>
   <dependencies>
-    <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <version>0.5-groovy-1.8</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.objenesis</groupId>
       <artifactId>objenesis</artifactId>
       <version>1.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.spockframework</groupId>
+      <artifactId>spock-core</artifactId>
+      <version>0.5-groovy-1.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
