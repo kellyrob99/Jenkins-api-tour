@@ -1,0 +1,22 @@
+apply plugin: 'groovy'
+
+group = 'org.kar'
+
+versions = [
+        groovy: '1.8.5',
+].asImmutable()
+
+repositories{
+    mavenCentral()
+    maven {
+        url 'http://maven.glassfish.org/content/groups/public/'
+    }
+    maven {
+        url 'http://kellyrob99.github.com/Jenkins-api-tour/repository'
+    }
+}
+dependencies {
+    groovy "org.codehaus.groovy:groovy-all:${versions.groovy}"
+    compile 'org.kar:hudson-api:0.2-SNAPSHOT'
+    testCompile 'junit:junit:4.10'
+}
