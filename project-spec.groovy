@@ -9,7 +9,8 @@ spec = [
 
         versions: [
                 groovy: '1.8.6',
-                jenkins: '1.451'
+                jenkins: '1.451',
+                hudson: '2.2.0'
         ],
 ]
 
@@ -27,5 +28,7 @@ spec.libraries = [
         httpBuilder: 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.1',
         junit: 'junit:junit:4.8.2',
         jenkinsCli: ["org.jenkins-ci.main:cli:${spec.versions.jenkins}","org.jenkins-ci.main:remoting:2.12"],
-        jenkins: "org.jenkins-ci.main:jenkins-war:${spec.versions.jenkins}@war"
+        jenkins: "org.jenkins-ci.main:jenkins-war:${spec.versions.jenkins}@war",
+        hudsonCli:["org.jvnet.hudson.main:hudson-cli:${spec.versions.hudson}",'org.jvnet.hudson.main:remoting:1.395'],
+        hudson: "org.jvnet.hudson.main:hudson-war:${spec.versions.hudson}@war"
 ]

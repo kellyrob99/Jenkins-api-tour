@@ -5,6 +5,8 @@ apply plugin: 'maven'
 apply plugin: 'code-quality'
 apply plugin: 'jetty'
 
+flavor = hasProperty('switch') ? 'hudson' : 'jenkins'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -26,23 +28,25 @@ repositories {
 
 configurations {
     jenkins
+    hudson
 }
 
 dependencies {
     compile gradleApi()
     compile spec.libraries.ivy
     compile spec.libraries.httpBuilder
-    compile spec.libraries.jenkinsCli
+    compile spec.libraries["${flavor}Cli".toString()]
     runtime 'commons-cli:commons-cli:1.2'
     testCompile spec.libraries.spock
     testCompile spec.libraries.junit
     groovy spec.libraries.groovy
     jenkins spec.libraries.jenkins
+    hudson spec.libraries.hudson
 }
 
 group = spec.group
 version = spec.version
-System.properties['HUDSON_HOME'] = "$buildDir/jenkins".toString() //force Jenkins to run within the build workspace
+System.properties['HUDSON_HOME'] = "$buildDir/$flavor".toString() //force Jenkins/Hudson to run within the build workspace
 
 test {
     dependsOn jettyRunWar
@@ -62,9 +66,17 @@ test {
             {
                 //logger.warn("Exception thrown: $e")
             }
-            logger.warn("Waiting for Jenkins ${++tries} ($sleep ms)")
+            logger.warn("Waiting for $flavor ${++tries} ($sleep ms)")
             Thread.sleep(sleep)
         }
+    }
+    /**
+     * Definitely some differences here in terms of both functionality(missing who-am-i method for instance)
+     * and in content of returned values.
+     */
+    if(flavor == 'hudson')
+    {
+        exclude '**/HudsonCliApiTest.class'
     }
 }
 
@@ -75,8 +87,8 @@ jar.enabled = true
 * Use the jetty plugin to run the build server.
 */
 jettyRunWar {
-    dependsOn configurations.jenkins
-    webApp = configurations.jenkins.resolve().find {it.name.endsWith('war')}
+    dependsOn configurations."$flavor"
+    webApp = configurations."$flavor".resolve().find {it.name.endsWith('war')}
     contextPath = ''
 }
 
