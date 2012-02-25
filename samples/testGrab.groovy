@@ -14,7 +14,7 @@ HudsonControlApi controlApi = new HudsonControlApi()
 
 /* Example usages */
 //  Create a new job based on a config.xml file. Useful for copying a build from one node to another.
-assert HTTP_OK == jobApi.createJob(rootUrl, new File('src/test/resources/config.xml').text, 'test2')
+assert HTTP_OK == jobApi.createJob(rootUrl, new File('../src/test/resources/config.xml').text, 'test2')
 
 // And then delete that job
 apiResult = api.inspectApi(rootUrl)
@@ -23,19 +23,19 @@ assert HTTP_MOVED_TEMP == jobApi.deleteJob(newJob.url)
 
 //  Execute scripts remotely. Output streams are printed to System.err and System.out,
 // so println's on the server appear locally.
-def listPlugins = 'jenkins.model.Jenkins.instance.pluginManager.plugins.each { \
+def listPlugins = 'Hudson.instance.pluginManager.plugins.each { \
 println("${it.longName} - ${it.version}") };'
 
-def allFailedBuilds = '''hudsonInstance = hudson.model.Hudson.instance
+def allFailedBuilds = '''hudsonInstance = Hudson.instance
 allItems = hudsonInstance.items
 activeJobs = allItems.findAll{job -> job.isBuildable()}
-failedRuns = activeJobs.findAll{job -> job.lastBuild && job.lastBuild.result == hudson.model.Result.FAILURE}
+failedRuns = activeJobs.findAll{job -> job.lastBuild && job.lastBuild.result == Result.FAILURE}
 failedRuns.each{run -> println(run.name)}'''
 
-def parseableAllFailedBuilds = '''hudsonInstance = hudson.model.Hudson.instance
+def parseableAllFailedBuilds = '''hudsonInstance = Hudson.instance
 allItems = hudsonInstance.items
 activeJobs = allItems.findAll{job -> job.isBuildable()}
-failedRuns = activeJobs.findAll{job -> job.lastBuild && job.lastBuild.result == hudson.model.Result.FAILURE}
+failedRuns = activeJobs.findAll{job -> job.lastBuild && job.lastBuild.result == Result.FAILURE}
 [activeJobs:activeJobs?.collect{it.name}, failedRuns:failedRuns?.collect{it.name}].inspect()'''
 
 [listPlugins, allFailedBuilds, parseableAllFailedBuilds].each{ script ->
@@ -45,7 +45,7 @@ failedRuns = activeJobs.findAll{job -> job.lastBuild && job.lastBuild.result == 
 // Execute a script remotely and capture the output for further study.
 OutputStream output = new ByteArrayOutputStream()
 cliApi.runCliCommand(rootUrl, ['groovysh', parseableAllFailedBuilds],System.in, output, System.err)
-def mapOfBuildsString = output.toString().substring(11) //remove some of the output characters that are not part of the returned value
+def mapOfBuildsString = cliApi.parseResponse(output.toString())
 Map mapOfBuilds = Eval.me(mapOfBuildsString)  // convert to a map using the easiest available method
 assert mapOfBuilds.activeJobs
 assert mapOfBuilds.failedRuns
@@ -59,3 +59,4 @@ println controlApi.sendQuiet(rootUrl)
 
 //  Restart a node, required for newly installed plugins to be made available.
 cliApi.runCliCommand(rootUrl, 'safe-restart')
+

@@ -77,4 +77,9 @@ class HudsonCliApi
         cli.execute(args, input, output, err)
         cli.close()
     }
+
+    String parseResponse(String response)
+    {
+        return response.substring(11)
+    }
 }

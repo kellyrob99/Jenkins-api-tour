@@ -41,10 +41,10 @@ git looks like a short plugin name. Did you mean 'null'?
         {
             if (i % 2 == 0)
             {
-                commands[lines[i]] = lines[i + 1]
+                commands[lines[i].trim()] = lines[i + 1].trim()
             }
         }
-//        println commands.inspect()
+        println commands.inspect()
         commands.size() > 0
     }
 
@@ -88,7 +88,7 @@ git looks like a short plugin name. Did you mean 'null'?
         final ByteArrayOutputStream output = new ByteArrayOutputStream()
         when:
         api.runCliCommand(rootUrl, ['groovysh', '''
-hudson.model.Hudson.instance.administrativeMonitors.inject([:]){ result, it ->
+hudson.administrativeMonitors.inject([:]){ result, it ->
     result[it.id] = [enabled: it.enabled, activated: it.activated]
     result
 }.inspect()
