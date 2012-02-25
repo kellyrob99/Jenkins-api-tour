@@ -8,9 +8,14 @@ This project explores the APIs and provides some simple examples of how to get t
  - extracting information from builds
  - triggering builds
  - remote shutdown of server
+
 #### Examples
+
 
 ## Highlights of the CLI jar
  - installing plugins
  - executing Groovy scripts on the server
+
+#### Examples
+<script src="https://gist.github.com/1910293.js"> </script>
 
