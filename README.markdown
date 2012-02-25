@@ -18,5 +18,18 @@ This project explores the APIs and provides some simple examples of how to get t
 
 #### Examples
 
-<script src="https://gist.github.com/1910293.js"> </script>
+    @GrabResolver(name = 'glassfish', root = 'http://maven.glassfish.org/content/groups/public/')
+    @GrabResolver(name = "github", root = "http://kellyrob99.github.com/Jenkins-api-tour/repository")
+    @Grab('org.kar:hudson-api:0.2-SNAPSHOT')
+    @GrabExclude('org.codehaus.groovy:groovy')
+    import org.kar.hudson.api.cli.HudsonCliApi
+
+    String rootUrl = 'http://localhost:8080'
+    HudsonCliApi cliApi = new HudsonCliApi()
+    OutputStream out = new ByteArrayOutputStream()
+    cliApi.runCliCommand(rootUrl, ['groovysh', 'hudson.jobNames.inspect()'], System.in, out, System.err)
+    List allJobs = Eval.me(cliApi.parseResponse(out.toString()))
+    println allJobs
+
+
 
