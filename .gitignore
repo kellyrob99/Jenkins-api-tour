@@ -6,6 +6,8 @@ target/*
 build/*
 classes/*
 out/*
+samples/build/*
+samples/target/*
 *.iml
 *.ipr
 *.iws
