@@ -3,8 +3,9 @@
 # except for .gitignore
 !.gitignore
 target/*
-samples/build/*
+build/*
 classes/*
+out/*
 *.iml
 *.ipr
 *.iws
