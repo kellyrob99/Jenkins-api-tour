@@ -12,6 +12,7 @@ This project explores the APIs and provides some simple examples of how to get t
 #### Examples
 
 **Get the names of all Jobs from the server**
+
     @GrabResolver(name = 'glassfish', root = 'http://maven.glassfish.org/content/groups/public/')
     @GrabResolver(name = "github", root = "http://kellyrob99.github.com/Jenkins-api-tour/repository")
     @Grab('org.kar:hudson-api:0.2-SNAPSHOT')
@@ -32,7 +33,6 @@ This project explores the APIs and provides some simple examples of how to get t
 #### Examples
 
 **Get the names of all Jobs from the server**
-
 
     @GrabResolver(name = 'glassfish', root = 'http://maven.glassfish.org/content/groups/public/')
     @GrabResolver(name = "github", root = "http://kellyrob99.github.com/Jenkins-api-tour/repository")
