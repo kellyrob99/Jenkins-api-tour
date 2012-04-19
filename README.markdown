@@ -131,5 +131,5 @@ Use these annotations in a Groovy script:
     @GrabExclude('org.codehaus.groovy:groovy')
 
 
-
+This project is made available under the Apache 2.0 license, , I hope you find value and have fun with it! http://www.apache.org/licenses/LICENSE-2.0
 
