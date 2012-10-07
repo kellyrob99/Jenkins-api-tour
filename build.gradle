@@ -86,6 +86,7 @@ jar.enabled = true
 * Use the jetty plugin to run the build server.
 */
 jettyRunWar {
+    httpPort = 9001
     dependsOn configurations."$flavor"
     webApp = configurations."$flavor".resolve().find {it.name.endsWith('war')}
     contextPath = ''
