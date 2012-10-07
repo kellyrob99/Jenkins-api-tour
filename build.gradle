@@ -20,8 +20,7 @@ apply plugin: 'org.linkedin.userConfig'
 apply plugin: 'org.linkedin.spec'
 
 repositories {
-    mavenRepo urls: ["http://download.java.net/maven/2/", 'http://maven.glassfish.org/content/groups/public/',
-            'http://m2repo.spockframework.org/']
+    mavenRepo urls: ['http://repo.jenkins-ci.org/repo/']
     mavenLocal()
     mavenCentral()
 }
@@ -93,7 +92,7 @@ jettyRunWar {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-8'
+    gradleVersion = '1.2'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
